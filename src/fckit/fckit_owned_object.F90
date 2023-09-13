@@ -128,7 +128,11 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   FCKIT_WRITE_DEBUG "BEGIN fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
 
+#if FCKIT_ENABLE_CRAY_WORKAROUND
   if( .not. type_is_null(this) ) then
+#else
+  if( .not. this%is_null() ) then
+#endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
@@ -248,7 +252,11 @@ end subroutine
 subroutine assignment_operator(this,other)
   class(fckit_owned_object), intent(inout) :: this
   class(fckit_owned_object), intent(in)    :: other
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+  if( type_is_null(other) ) then
+#else
   if( other%is_null() ) then
+#endif
     write(0,*) "ERROR! other was not initialised"
   endif
 #if FCKIT_FINAL_DEBUGGING
@@ -259,7 +267,11 @@ subroutine assignment_operator(this,other)
 #endif
   if( this /= other ) then
 #if FCKIT_FINAL_DEBUGGING
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+    if( type_is_null(this) ) then
+#else
     if( this%is_null() ) then
+#endif
       FCKIT_WRITE_LOC
       FCKIT_WRITE_DEBUG "assignment_operator of uninitialised"
     else
@@ -356,20 +368,35 @@ subroutine return(this)
 #if FCKIT_FINAL_FUNCTION_RESULT
   ! Cray example
   ! final will be called, which will detach, so attach first
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+  if( type_owners(this) == 0 ) then
+#else
   if( this%owners() == 0 ) then
+#endif
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> attach"
 #endif
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+    call type_attach(this)
+#else
     call this%attach()
+#endif
   endif
 #else
   ! final will not be called, so detach manually
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+  if( type_owners(this) > 0 ) then
+#else
   if( this%owners() > 0 ) then
+#endif
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> detach"
 #endif
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+    call type_detach(this)
+#else
     call this%detach()
   endif
 #endif
@@ -461,7 +488,11 @@ subroutine reset_c_ptr(this,cptr,deleter)
   type(c_funptr), optional :: deleter
   if( present(cptr) ) then
     this%cpp_object_ptr = cptr
+#if FCKIT_ENABLE_CRAY_WORKAROUND
+    call type_attach(this)
+#else
     call this%attach()
+#endif
 
     if( present(deleter) ) then
       this%deleter = deleter
