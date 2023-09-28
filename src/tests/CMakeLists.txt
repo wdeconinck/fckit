@@ -37,8 +37,7 @@ add_fctest( TARGET  fckit_test_owned_object
             LINKER_LANGUAGE Fortran
             SOURCES
               test_owned_object.F90
-              test_owned_object.cc
-            LIBS    fckit eckit
+            LIBS    fckit_reproduce
             CONDITION HAVE_ECKIT
           )
 

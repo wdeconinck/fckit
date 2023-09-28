@@ -7,6 +7,7 @@
 # does it submit to any jurisdiction.
 
 add_subdirectory(fckit)
+add_subdirectory(fckit_reproduce)
 add_subdirectory(apps)
 add_subdirectory(tests)
 
