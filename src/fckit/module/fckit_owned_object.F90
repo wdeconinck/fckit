@@ -255,6 +255,16 @@ function owners(this)
   endif
 end function
 
+function type_owners(this)
+  integer(c_int32_t) :: type_owners
+  type(fckit_owned_object), intent(in) :: this
+  if( type_is_null(this) ) then
+    type_owners = 0
+  else
+    type_owners = fckit__Owned__owners(this%cpp_object_ptr)
+  endif
+end function
+
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_owned_object), intent(inout) :: this
@@ -312,6 +322,17 @@ function is_null(this)
     is_null = .False.
   else
     is_null = .True.
+  endif
+end function
+
+function type_is_null(this)
+  use, intrinsic :: iso_c_binding, only: c_associated
+  logical :: type_is_null
+  type(fckit_owned_object) :: this
+  if( c_associated( this%cpp_object_ptr ) ) then
+          type_is_null = .False.
+  else
+          type_is_null = .True.
   endif
 end function
 
