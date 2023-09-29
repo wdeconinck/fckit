@@ -54,19 +54,19 @@ subroutine test_2
     obj1 = Object(1)
     
     if( obj1%owners() /= 1 ) then
-        write(0,*) "ERROR: obj1%owners /= 1"
+        write(0,*) "ERROR: obj1%owners /= 1    owners = ", obj1%owners()
         success = .false.
     endif
 
     obj2  = obj1%create_object(2) ! this registers obj1 inside obj2 --> obj1%owners() += 1
 
     if( obj1%owners() /= 2 ) then
-        write(0,*) "ERROR: obj1%owners /= 2"
+        write(0,*) "ERROR: obj1%owners /= 2    owners = ", obj1%owners()
         success = .false.
     endif
 
     if( obj2%owners() /= 1 ) then
-        write(0,*) "ERROR: obj2%owners /= 1"
+        write(0,*) "ERROR: obj2%owners /= 1    owners = ", obj2%owners()
         success = .false.
     endif
 

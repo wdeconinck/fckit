@@ -5,6 +5,8 @@
 
 #include "fckit/fckit_owned.h"
 
+#define __FILENAME__ "fckit_reproduce.cc"
+
 extern "C" {
 void fckit_write_to_fortran_unit( int unit, const char* msg );
 int fckit_fortranunit_stdout();
@@ -15,22 +17,34 @@ class Object : eckit::Owned {
 public:
     Object( int i ) : eckit::Owned(), i_( i ) {
         std::stringstream out;
-        out << "constructing Object " << i_;
+        out << __FILENAME__ << " @ " << __LINE__ <<  " :  " << "fckit_reprconstructing Object " << i_;
         fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );
     }
     ~Object() {
         std::stringstream out;
-        out << "destructing Object " << i_;
+        out << __FILENAME__ << " @ " << __LINE__ <<  " :  " << "destructing Object " << i_;
         fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );
+        if (other_) {
+            other_->detach();
+            if( other_->owners() == 0 ) {
+                delete other_;
+            }
+        }
     }
     int id() const { return i_; }
 
     void set_other(Object* other) {
         if (other_) {
             other_->detach();
+            if( other_->owners() == 0 ) {
+                delete other_;
+            }
         }
         other_ = other;
         other_->attach();
+        std::stringstream out;
+        out << __FILENAME__ << " @ " << __LINE__ <<  " :  " << "Object " << id() << " setting other [id = " << other_->id() << ", owners = " << other_->owners() << "]";
+        fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );
     }
 
     Object* other() const {
@@ -53,7 +67,7 @@ int Object__id( const Object* p ) {
     return p->id();
 }
 void Object__set_other( Object* p, Object* o ) {
-    p->set_other(p);
+    p->set_other(o);
 }
 Object* Object__other( Object* p) {
     return p->other();
