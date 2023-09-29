@@ -398,6 +398,7 @@ subroutine return(this)
     call type_detach(this)
 #else
     call this%detach()
+#endif
   endif
 #endif
 #if FCKIT_FINAL_DEBUGGING
