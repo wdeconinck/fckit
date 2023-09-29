@@ -15,11 +15,8 @@ macro( check_final_support )
     set( DEBUG_FINAL_SUPPORT FALSE  )
     macro( debug_test case )
       if( DEBUG_FINAL_SUPPORT )
-        ecbuild_add_executable(
-          TARGET  fckit-test-${case}
-          SOURCES ${FINAL_SUPPORT_SOURCE}
-          DEFINITIONS ${case}
-        )
+        add_executable( fckit-test-${case} ${FINAL_SUPPORT_SOURCE})
+        target_compile_definitions( fckit-test-${case} PUBLIC ${case})
       endif()
     endmacro()
 
@@ -33,9 +30,9 @@ macro( check_final_support )
                      COMPILE_DEFINITIONS -D${case}
                      LINK_LIBRARIES "${CMAKE_EXE_LINKER_FLAGS}"
                      OUTPUT_VARIABLE FCKIT_${case}_compile_output
-                     COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin )
+                     COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/final-support/${case}.bin )
     
-        execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${case}.bin
+        execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/final-support/${case}.bin
                          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                          RESULT_VARIABLE _run_res
                          OUTPUT_VARIABLE FCKIT_${case} ERROR_VARIABLE _run_err )
@@ -62,10 +59,6 @@ macro( check_final_support )
       check_final_support_case( ${case} )
     endforeach()
     
-    ecbuild_add_executable(
-      TARGET  fckit-final-support
-      SOURCES ${FINAL_SUPPORT_SOURCE}
-      NOINSTALL
-    )
+    #add_executable( fckit-final-support ${FINAL_SUPPORT_SOURCE})
 
 endmacro()

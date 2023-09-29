@@ -9,25 +9,25 @@
  */
 
 #include <cstdint>
-#include <cstring>
-#include <string>
 
-#include "eckit/io/SharedBuffer.h"
-
-using int32  = std::int32_t;
-using size_t = std::size_t;
+#include "fckit_owned.h"
 
 extern "C" {
 
-int32 c_fckit_buffer_str( const eckit::Buffer* This, char*& str, size_t& size ) {
-    std::string s( *This, This->size() );
-    size = s.size() + 1;
-    str  = new char[size];
-    strcpy( str, s.c_str() );
-    return true;
+std::int32_t fckit__Owned__owners( const eckit::Owned* owned ) {
+    return owned->owners();
 }
 
-void c_fckit_buffer_delete( eckit::CountedBuffer* This ) {
-    delete This;
+void fckit__Owned__attach( const eckit::Owned* owned ) {
+    owned->attach();
+}
+
+void fckit__Owned__detach( const eckit::Owned* owned ) {
+    owned->detach();
+}
+
+void fckit__delete_Owned( eckit::Owned* owned ) {
+    delete owned;
+    owned = 0;
 }
 }

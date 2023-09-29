@@ -7,28 +7,21 @@
 # does it submit to any jurisdiction.
 
 
+# reproducer library
+
 set( CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module/fckit_reproduce )
 
-ecbuild_add_library( TARGET  fckit_reproduce
-            LINKER_LANGUAGE CXX
-            SOURCES
-              fckit_reproduce.F90
-              fckit_reproduce_c_binding.F90
-              fckit_reproduce.cc
-            PUBLIC_LIBS 
-              fckit
-            PUBLIC_INCLUDES
-              $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
-              $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
-              $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
-              $<INSTALL_INTERFACE:include>
-              $<INSTALL_INTERFACE:module/fckit>
+add_library( fckit_reproduce
+  fckit_reproduce.F90
+  fckit_reproduce_c_binding.F90
+  fckit_reproduce.cc
 )
-
-ecbuild_add_executable(
-  TARGET  test_fckit_reproduce
-  SOURCES test_fckit_reproduce.F90
-  LIBS fckit_reproduce
+set_target_properties( fckit_reproduce PROPERTIES LINKER_LANGUAGE CXX )
+target_include_directories( fckit PUBLIC $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
 )
+target_link_libraries( fckit_reproduce PUBLIC fckit )
 
+# executable
 
+add_executable( test_fckit_reproduce test_fckit_reproduce.F90 )
+target_link_libraries( test_fckit_reproduce PUBLIC fckit_reproduce )

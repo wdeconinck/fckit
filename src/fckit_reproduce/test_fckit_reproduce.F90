@@ -42,7 +42,7 @@ subroutine test_1
         success = .false.
     endif
 
-    ! call obj%final()
+    call obj%final()
 end subroutine
 
 subroutine test_2

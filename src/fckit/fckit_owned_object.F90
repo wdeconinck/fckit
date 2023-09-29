@@ -6,7 +6,7 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit.h"
+#include "fckit.h"
 
 #if FCKIT_FINAL_DEBUGGING
 #define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_owned_object.F90 @ ",__LINE__,'  : '
@@ -122,27 +122,10 @@ CONTAINS
 !========================================================================
 
 FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
-#ifdef _CRAYFTN
-  use, intrinsic :: iso_c_binding, only : c_loc, c_null_ptr
-#endif
   type(fckit_owned_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "BEGIN fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-  ! Guard necessary for Cray compiler...
-  ! ... when "this" has already been deallocated, and then
-  ! fckit_owned_object__final_auto is called...
-#ifdef _CRAYFTN
-  if( c_loc(this) == c_null_ptr ) then
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "_CRAYFTN not calling final()"
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
-#endif
-    return
-  endif
 #endif
 
   if( .not. type_is_null(this) ) then
@@ -150,7 +133,13 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
 #endif
+
+#if FCKIT_ENABLE_CRAY_WORKAROUND
   call type_final(this)
+#else
+  call this%final()
+#endif
+
   endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC

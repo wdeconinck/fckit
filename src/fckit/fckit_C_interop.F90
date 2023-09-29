@@ -6,8 +6,6 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit/fckit.h"
-
 module fckit_C_interop_module
 implicit none
 private
@@ -18,7 +16,6 @@ private
 public :: c_ptr_free
 public :: c_ptr_compare_equal
 public :: c_ptr_to_loc
-public :: get_c_commandline_arguments
 public :: c_str_to_string
 public :: c_ptr_to_string
 public :: copy_c_ptr_to_string
@@ -77,7 +74,6 @@ end function
 subroutine fckit_c_nodelete(cptr) bind(c)
   use, intrinsic :: iso_c_binding
   type(c_ptr), value :: cptr
-  FCKIT_SUPPRESS_UNUSED(cptr)
 end subroutine
 
 function fckit_c_nodeleter()
@@ -103,40 +99,6 @@ function c_ptr_to_loc(cptr) result(loc)
   type(c_ptr), intent(in) :: cptr
   loc = fckit__cptr_to_loc(cptr)
 end function
-
-! =============================================================================
-
-subroutine get_c_commandline_arguments(argc,argv)
-  use, intrinsic :: iso_c_binding
-  integer(c_int), intent(out) :: argc
-  type(c_ptr), intent(inout) :: argv(:)
-  character(kind=c_char,len=1), save, target :: args(255)
-  character(kind=c_char,len=255), save, target :: cmd
-  character(kind=c_char,len=255) :: arg
-  integer(c_int) :: iarg, arglen, pos, ich, argpos
-  call get_command(cmd)
-  do ich=1,len(cmd)
-    if (cmd(ich:ich) == " ") then
-      cmd(ich:ich) = c_null_char
-      exit
-    endif
-  enddo
-  argv(1) = c_loc(cmd(1:1))
-  argc = command_argument_count()+1
-  pos = 1
-  do iarg=1,argc
-    argpos = pos
-    call get_command_argument(iarg, arg )
-    arglen = len_trim(arg)
-    do ich=1,arglen
-      args(pos) = arg(ich:ich)
-      pos = pos+1
-    end do
-    args(pos) = c_null_char;  pos = pos+1
-    args(pos) = " ";          pos = pos+1
-    argv(iarg+1) = c_loc(args(argpos))
-  enddo
-end subroutine
 
 ! =============================================================================
 

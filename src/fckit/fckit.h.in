@@ -22,7 +22,18 @@ does it submit to any jurisdiction.
 #define FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY     @FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY@
 
 #define FCKIT_FINAL impure elemental
+
+#ifdef ENABLE_DEBUG_OUTPUT
 #define FCKIT_FINAL_DEBUGGING 1
+#else
+#define FCKIT_FINAL_DEBUGGING 0
+#endif
+
+#ifdef ENABLE_CRAY_WORKAROUND
+#define FCKIT_ENABLE_CRAY_WORKAROUND 1
+#else
+#define FCKIT_ENABLE_CRAY_WORKAROUND 0
+#endif
 
 #define FCKIT_SUPPRESS_UNUSED( X ) \
 associate( unused_ => X ); \

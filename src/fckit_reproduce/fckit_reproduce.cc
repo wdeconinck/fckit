@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-#include "fckit/fckit_owned.h"
+#include "fckit_owned.h"
 
 #define __FILENAME__ "fckit_reproduce.cc"
 

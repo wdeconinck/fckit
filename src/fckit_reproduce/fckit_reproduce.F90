@@ -1,4 +1,4 @@
-#include "fckit/fckit.h"
+#include "fckit.h"
 
 module fckit_reproduce_module
 
@@ -16,6 +16,7 @@ TYPE, extends(fckit_owned_object) :: Object
 contains
   procedure, public :: create_object
 #if FCKIT_FINAL_NOT_INHERITING
+  ! This is the case for cray compiler cce/15
   final :: Object__final_auto
 #endif
 END TYPE
@@ -28,6 +29,7 @@ end interface
 TYPE, extends(Object) :: Derived
 contains
 #if FCKIT_FINAL_NOT_INHERITING
+  ! This is the case for cray compiler cce/15
   final :: Derived__final_auto
 #endif
 END TYPE
@@ -54,12 +56,12 @@ end function
 ! Destructor
 
 #if FCKIT_FINAL_NOT_INHERITING
+! This is the case for cray compiler cce/15
 FCKIT_FINAL subroutine Object__final_auto(this)
   type(Object), intent(inout) :: this
 #if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
-  FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 
 FCKIT_FINAL subroutine Derived__final_auto(this)
@@ -67,7 +69,6 @@ FCKIT_FINAL subroutine Derived__final_auto(this)
 #if FCKIT_FINAL_NOT_PROPAGATING
   call this%final()
 #endif
-  FCKIT_SUPPRESS_UNUSED( this )
 end subroutine
 #endif
 
