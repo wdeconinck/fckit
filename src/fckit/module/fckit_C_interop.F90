@@ -151,7 +151,7 @@ function c_str_to_string(s) result(string)
      i = i + 1
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
-  FCKIT_ALLOCATE_CHARACTER(string,nchars)
+  allocate( character(len=nchars,kind=c_char) :: string )
   do i=1,nchars
     string(i:i) = s(i)
   enddo
@@ -170,7 +170,7 @@ subroutine copy_c_str_to_string(s,string)
      i = i + 1
   enddo
   nchars = i - 1  ! Exclude null character from Fortran string
-  FCKIT_ALLOCATE_CHARACTER(string,nchars)
+  allocate( character(len=nchars,kind=c_char) :: string )
   do i=1,nchars
     string(i:i) = s(i)
   enddo
@@ -228,4 +228,33 @@ function c_str_right_trim(f_str)
 end function
 
 ! =============================================================================
+
+! Callback function, used from C++ side
+subroutine fckit_write_to_fortran_unit(unit,msg_cptr) bind(C)
+  use, intrinsic :: iso_c_binding, only: c_int32_t, c_ptr, c_char, c_associated
+  !use fckit_c_interop_module, only : copy_c_ptr_to_string
+  integer(c_int32_t), value, intent(in) :: unit
+  type(c_ptr), value, intent(in) :: msg_cptr
+  character(kind=c_char,len=:), allocatable :: msg
+  if( c_associated(msg_cptr) ) then
+    call copy_c_ptr_to_string( msg_cptr, msg )
+    write(unit,'(A)') msg
+  endif
+end subroutine
+
+function fckit_fortranunit_stdout() result(stdout) bind(C)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  use, intrinsic :: iso_fortran_env, only : output_unit
+  integer(c_int32_t) :: stdout
+  stdout = output_unit
+end function
+
+function fckit_fortranunit_stderr() result(stderr) bind(C)
+  use, intrinsic :: iso_c_binding, only : c_int32_t
+  use, intrinsic :: iso_fortran_env, only : error_unit
+  integer(c_int32_t) :: stderr
+  stderr = error_unit
+end function
+
+
 end module

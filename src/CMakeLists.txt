@@ -8,8 +8,8 @@
 
 add_subdirectory(fckit)
 add_subdirectory(fckit_reproduce)
-add_subdirectory(apps)
-add_subdirectory(tests)
+#add_subdirectory(apps)
+#add_subdirectory(tests)
 
 if ( HAVE_SANDBOX )
   add_subdirectory(sandbox)

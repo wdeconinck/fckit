@@ -29,11 +29,7 @@ public fckit_owned_object
 type :: fckit_owned_object
   !! Abstract base class for objects that wrap a C++ object
 
-#if !PGIBUG_ATLAS_197
   type(c_ptr), private :: cpp_object_ptr = c_null_ptr
-#else
-  type(c_ptr), public :: cpp_object_ptr = c_null_ptr
-#endif
   type(c_funptr), private :: deleter = c_null_funptr
     !! Internal C pointer
 
@@ -283,7 +279,7 @@ subroutine assignment_operator(this,other)
     endif
 #endif
     call this%final()
-    call this%reset_c_ptr( other%CPTR_PGIBUG_A, other%deleter )
+    call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "  \-> owners ", this%owners()

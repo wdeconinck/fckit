@@ -9,10 +9,8 @@
  */
 
 #include <cstdint>
-#include "fckit/fckit.h"
 
-#if FCKIT_HAVE_ECKIT
-#include "eckit/memory/Owned.h"
+#include "fckit/fckit_owned.h"
 
 extern "C" {
 
@@ -33,16 +31,3 @@ void fckit__delete_Owned( eckit::Owned* owned ) {
     owned = 0;
 }
 }
-
-#else
-
-extern "C" {
-std::int32_t fckit__Owned__owners( const eckit::Owned* owned ) {
-    return 0;
-}
-void fckit__Owned__attach( const void* ) {}
-void fckit__Owned__detach( const void* ) {}
-void fckit__delete_Owned( void* ) {}
-}
-
-#endif

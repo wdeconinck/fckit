@@ -14,7 +14,7 @@ private
 !------------------------------------------------------------------------------
 TYPE, extends(fckit_owned_object) :: Object
 contains
-  procedure, public :: create_derived
+  procedure, public :: create_object
 #if FCKIT_FINAL_NOT_INHERITING
   final :: Object__final_auto
 #endif
@@ -25,32 +25,29 @@ interface Object
 end interface
 
 !------------------------------------------------------------------------------
-
 TYPE, extends(Object) :: Derived
 contains
 #if FCKIT_FINAL_NOT_INHERITING
   final :: Derived__final_auto
 #endif
-
 END TYPE
 
 interface Derived
   module procedure Derived__ctor_id
 end interface
 
-!------------------------------------------------------------------------------
-
 !========================================================
 contains
 !========================================================
 
-function create_derived(this,id) result(derived)
+function create_object(this,id) result(obj)
   use fckit_reproduce_c_binding
   class(Object), intent(in) :: this
   integer :: id
-  type(fckit_owned_object) :: derived
-  call derived%reset_c_ptr( new_Object(id) )
-  call derived%return()
+  type(fckit_owned_object) :: obj
+  call obj%reset_c_ptr( new_Object(id) )
+  call Object__set_other(obj%c_ptr(), this%c_ptr())
+  call obj%return()
 end function
 
 ! -----------------------------------------------------------------------------

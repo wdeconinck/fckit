@@ -74,10 +74,10 @@ if( NOT fckit_HAVE_FINAL )
     set( FCKIT_FINAL_BROKEN_FOR_AUTOMATIC_ARRAY   0 )
 endif()
 
-ecbuild_find_package( NAME eckit VERSION 1.14 QUIET )
-ecbuild_add_option( FEATURE ECKIT
-                    DESCRIPTION "Wrap ecKit functionality"
-                    CONDITION eckit_FOUND )
+# ecbuild_find_package( NAME eckit VERSION 1.14 QUIET )
+# ecbuild_add_option( FEATURE ECKIT
+#                     DESCRIPTION "Wrap ecKit functionality"
+#                     CONDITION eckit_FOUND )
 if( NOT fckit_HAVE_ECKIT )
     ecbuild_warn("ecKit could not be found. This disables various fckit features such as MPI, Configuration, Logging")
 endif()
@@ -112,7 +112,7 @@ include( fckit_preprocess_fypp )
 include( add_fctest )
 
 add_subdirectory( src )
-add_subdirectory( doc )
+#add_subdirectory( doc )
 
 ################################################################################################
 # finalize

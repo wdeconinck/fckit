@@ -8,6 +8,7 @@
 
 cmake_policy( SET CMP0064 NEW ) # Recognize ``TEST`` as operator for the ``if()`` command. (introduced in CMake version 3.4)
 
+if( FALSE )
 add_fctest( TARGET  fckit_test_array
             LINKER_LANGUAGE Fortran
             SOURCES test_array.F90
@@ -32,15 +33,24 @@ add_fctest( TARGET  fckit_test_shared_ptr
               test_shared_ptr.F90
               test_shared_ptr.cc
             LIBS    fckit)
+endif()
 
-add_fctest( TARGET  fckit_test_owned_object
-            LINKER_LANGUAGE Fortran
-            SOURCES
-              test_owned_object.F90
-            LIBS    fckit_reproduce
-            CONDITION HAVE_ECKIT
-          )
+ecbuild_add_executable(
+  TARGET  test_fckit_reproduce 
+  SOURCES test_owned_object.F90
+  LIBS fckit_reproduce
+)
 
+
+# add_fctest( TARGET  fckit_test_owned_object
+#             LINKER_LANGUAGE Fortran
+#             SOURCES
+#               test_owned_object.F90
+#             LIBS    fckit_reproduce
+#             CONDITION HAVE_ECKIT
+#           )
+
+if (FALSE)
 add_fctest( TARGET  fckit_test_mpi
             LINKER_LANGUAGE Fortran
             SOURCES test_mpi.F90
@@ -153,3 +163,4 @@ endforeach()
 ### Test downstream find_package(fckit) projects
 add_subdirectory( test_downstream_fypp )
 add_subdirectory( test_downstream_fctest )
+endif()

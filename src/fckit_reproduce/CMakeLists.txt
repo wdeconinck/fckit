@@ -6,6 +6,9 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+
+set( CMAKE_Fortran_MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/module/fckit_reproduce )
+
 ecbuild_add_library( TARGET  fckit_reproduce
             LINKER_LANGUAGE CXX
             SOURCES
@@ -14,13 +17,18 @@ ecbuild_add_library( TARGET  fckit_reproduce
               fckit_reproduce.cc
             PUBLIC_LIBS 
               fckit
-              $<LINK_ONLY:eckit>
             PUBLIC_INCLUDES
               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
               $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
               $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
               $<INSTALL_INTERFACE:include>
               $<INSTALL_INTERFACE:module/fckit>
-            CONDITION HAVE_ECKIT
 )
- 
+
+ecbuild_add_executable(
+  TARGET  test_fckit_reproduce
+  SOURCES test_fckit_reproduce.F90
+  LIBS fckit_reproduce
+)
+
+
