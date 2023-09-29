@@ -14,8 +14,9 @@ module fckit_shared_ptr_module
 use fckit_refcount_module, only : &
   & fckit_refcount, &
   & fckit_refcount_interface, &
-  & fckit_external, &
-  & fckit_owned
+  & fckit_external
+ ! , &
+ ! & fckit_owned
 #else
 use fckit_refcount_module, only : &
   & fckit_refcount, &
@@ -35,7 +36,7 @@ public fckit_refcount_interface
 public fckit_external
 
 #if FCKIT_HAVE_ECKIT
-public fckit_owned
+!public fckit_owned
 #endif
 
 !========================================================================
