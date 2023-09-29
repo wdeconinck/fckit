@@ -149,12 +149,12 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   endif
 #endif
 
-  if( .not. this%is_null() ) then
+  if( .not. type_is_null(this) ) then
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "this%final() address:",c_ptr_to_loc(this%cpp_object_ptr)
 #endif
-  call this%final()
+  call type_final(this)
   endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
