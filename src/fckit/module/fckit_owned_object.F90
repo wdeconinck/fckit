@@ -466,7 +466,6 @@ logical function type_not_equal(obj1,obj2)
 end function
 
 subroutine reset_c_ptr(this,cptr,deleter)
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_funptr
   use fckit_c_interop_module
   class(fckit_owned_object) :: this
   type(c_ptr), optional :: cptr
@@ -489,7 +488,6 @@ subroutine reset_c_ptr(this,cptr,deleter)
 end subroutine
 
 subroutine type_reset_c_ptr(this,cptr,deleter)
-  use, intrinsic :: iso_c_binding, only: c_ptr, c_funptr, c_null_funptr
   use fckit_c_interop_module
   type(fckit_owned_object) :: this
   type(c_ptr), optional :: cptr
