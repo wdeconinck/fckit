@@ -17,7 +17,7 @@ class Object : eckit::Owned {
 public:
     Object( int i ) : eckit::Owned(), i_( i ) {
         std::stringstream out;
-        out << __FILENAME__ << " @ " << __LINE__ <<  " :  " << "fckit_reprconstructing Object " << i_;
+        out << __FILENAME__ << " @ " << __LINE__ <<  " :  " << "constructing Object " << i_;
         fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );
     }
     ~Object() {
