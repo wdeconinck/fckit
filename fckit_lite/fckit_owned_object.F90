@@ -6,7 +6,23 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-#include "fckit.h"
+#ifdef ENABLE_FINAL
+#define FCKIT_HAVE_FINAL 1
+#else
+#define FCKIT_HAVE_FINAL 0
+#endif
+
+#ifdef ENABLE_DEBUG_OUTPUT
+#define FCKIT_FINAL_DEBUGGING 1
+#else
+#define FCKIT_FINAL_DEBUGGING 0
+#endif
+
+#ifdef ENABLE_CRAY_WORKAROUND
+#define FCKIT_ENABLE_CRAY_WORKAROUND 1
+#else
+#define FCKIT_ENABLE_CRAY_WORKAROUND 0
+#endif
 
 #if FCKIT_FINAL_DEBUGGING
 #define FCKIT_WRITE_LOC write(0,'(A,I0,A)',advance='NO') "fckit_owned_object.F90 @ ",__LINE__,'  : '
@@ -118,7 +134,7 @@ end interface
 CONTAINS
 !========================================================================
 
-FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
+impure elemental subroutine fckit_owned_object__final_auto(this)
   type(fckit_owned_object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
@@ -311,8 +327,6 @@ end subroutine
 subroutine assignment_operator_hook(this, other)
   class(fckit_owned_object) :: this
   class(fckit_owned_object) :: other
-  FCKIT_SUPPRESS_UNUSED( this )
-  FCKIT_SUPPRESS_UNUSED( other )
 end subroutine
 
 

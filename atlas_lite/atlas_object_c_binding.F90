@@ -1,5 +1,5 @@
 
-module fckit_reproduce_c_binding
+module atlas_object_c_binding
 
 implicit none
 

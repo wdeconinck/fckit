@@ -8,7 +8,7 @@
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-project( fckit_reproduce LANGUAGES C CXX Fortran )
+project( atlas_lite LANGUAGES C CXX Fortran )
 
 set(CMAKE_DIRECTORY_LABELS "fckit")
 set(CMAKE_CXX_STANDARD 17)
@@ -16,6 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/module )
 
 option( ENABLE_FINAL "Enable final" ON )
 option( ENABLE_CXX_LINKER "Enable CXX linker" ON )
@@ -54,11 +55,19 @@ endif()
 
 add_executable( test_inherit_final test_inherit_final.F90 )
 
+add_subdirectory( fckit_lite )
+add_subdirectory( atlas_lite )
+
+add_executable( test_atlas_lite test_atlas_lite.F90 )
+target_link_libraries( test_atlas_lite PUBLIC atlas_lite )
+
 if( ENABLE_OBJECT_FINAL_AUTO )
 message("")
 message("WARNING: ENABLE_OBJECT_FINAL_AUTO=ON, this is not desired but a workaround necessary for Cray")
 message("")
 endif()
 
-add_subdirectory( src )
+include(CTest)
+add_test( NAME test_inherit_final  COMMAND test_inherit_final)
+add_test( NAME test_atlas_lite     COMMAND test_atlas_lite)
 

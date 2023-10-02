@@ -5,12 +5,8 @@
 ! granted to it by virtue of its status as an intergovernmental organisation nor
 ! does it submit to any jurisdiction.
 
-! This File contains Unit Tests for testing the
-! C++ / Fortran Interfaces to the State Datastructure
-! @author Willem Deconinck
-
 program main
-    use fckit_reproduce_module, only : object_destroyed
+    use atlas_object_module, only : object_destroyed
 
     logical :: success
     logical :: autofinal
@@ -75,7 +71,7 @@ program main
 contains
 
 subroutine test_1
-    use fckit_reproduce_module, only : Object
+    use atlas_object_module, only : Object
 
     type(Object) :: obj
 
@@ -98,7 +94,7 @@ subroutine test_1
 end subroutine
 
 subroutine test_2
-    use fckit_reproduce_module, only : Object, Derived
+    use atlas_object_module, only : Object
 
     type(Object) :: obj1
     type(Object) :: obj2

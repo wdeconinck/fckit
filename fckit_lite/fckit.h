@@ -11,24 +11,4 @@ does it submit to any jurisdiction.
 #ifndef FCKIT_H
 #define FCKIT_H
 
-#define FCKIT_HAVE_FINAL                           @fckit_HAVE_FINAL@
-
-#define FCKIT_FINAL impure elemental
-
-#ifdef ENABLE_DEBUG_OUTPUT
-#define FCKIT_FINAL_DEBUGGING 1
-#else
-#define FCKIT_FINAL_DEBUGGING 0
-#endif
-
-#ifdef ENABLE_CRAY_WORKAROUND
-#define FCKIT_ENABLE_CRAY_WORKAROUND 1
-#else
-#define FCKIT_ENABLE_CRAY_WORKAROUND 0
-#endif
-
-#define FCKIT_SUPPRESS_UNUSED( X ) \
-associate( unused_ => X ); \
-end associate
-
 #endif

@@ -6,5 +6,16 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-add_subdirectory(fckit)
-add_subdirectory(fckit_reproduce)
+add_library( atlas_lite
+  atlas_object.cc
+  atlas_object_c_binding.F90
+  atlas_object.F90
+)
+if (ENABLE_CXX_LINKER)
+  set_target_properties( atlas_lite PROPERTIES LINKER_LANGUAGE CXX )
+else()
+  set_target_properties( atlas_lite PROPERTIES LINKER_LANGUAGE Fortran )
+endif()
+
+target_link_libraries( atlas_lite PUBLIC fckit_lite )
+

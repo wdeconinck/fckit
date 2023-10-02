@@ -6,7 +6,7 @@
 
 #include "fckit_owned.h"
 
-#define __FILENAME__ "fckit_reproduce.cc"
+#define __FILENAME__ "atlas_object.cc"
 
 extern "C" {
 void fckit_write_to_fortran_unit( int unit, const char* msg );
