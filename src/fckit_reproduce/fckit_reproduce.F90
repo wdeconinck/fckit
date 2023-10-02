@@ -95,10 +95,25 @@ end subroutine
 
 function Object__ctor_id(identifier) result(this)
   use fckit_reproduce_c_binding
+  use, intrinsic :: iso_c_binding, only : c_ptr
   type(Object) :: this
   integer, intent(in) :: identifier
-  call this%reset_c_ptr( new_Object(identifier) )
+  type(c_ptr) :: cptr
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__ctor_id begin"
+#endif
+cptr = new_Object(identifier)
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  this%reset_c_ptr(  )"
+#endif
+  call this%reset_c_ptr( cptr )
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  this%return()"
+#endif
   call this%return()
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__ctor_id end"
+#endif
 end function
 
 ! -----------------------------------------------------------------------------
