@@ -7,6 +7,7 @@ The code is altered compared to the original in order to create a minimal reprod
 
 Consider following Fortran code:
 
+```f90
     type :: Object
     contains
       final :: destructor
@@ -32,6 +33,7 @@ Consider following Fortran code:
       type(ObjectDerivedWithDummyFinal) :: this
       ! dummy, just so destructor will be called
     end subroutine 
+```
 
 Constructing an instance of `ObjectDerived` should call the 'destructor' subroutine from 'Object' but it doesn't.
 A workaround seems to be creating a dummy 'final' routine which is empty such as done in `ObjectDerivedWithDummyFinal`
