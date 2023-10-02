@@ -126,6 +126,8 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   FCKIT_WRITE_DEBUG "BEGIN fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
 
+if (.not. this%return_value) then
+
 #if FCKIT_ENABLE_CRAY_WORKAROUND
   if( .not. type_is_null(this) ) then
 #else
@@ -143,6 +145,8 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
 #endif
 
   endif
+
+endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
   FCKIT_WRITE_DEBUG "END fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
@@ -240,7 +244,12 @@ subroutine assignment_operator(this,other)
     endif
 #endif
     call this%final()
-    call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
+    if( other%return_value ) then
+      this%cpp_object_ptr = other%cpp_object_ptr
+      this%deleter = other%deleter
+    else
+      call this%reset_c_ptr( other%cpp_object_ptr, other%deleter )
+    endif
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "  \-> owners ", this%owners()
@@ -288,11 +297,14 @@ function owners(this)
   endif
 end function
 
-
+#if 0
 subroutine return(this)
   !! Transfer ownership to left hand side of "assignment(=)"
   class(fckit_owned_object), intent(inout) :: this
+  this%return_value = .true.
+
 #if FCKIT_FINAL_FUNCTION_RESULT
+#warning FCKIT_FINAL_FUNCTION_RESULT
   ! Cray example
   ! final will be called, which will detach, so attach first
 #if FCKIT_ENABLE_CRAY_WORKAROUND
@@ -321,8 +333,15 @@ subroutine return(this)
   endif
 #endif
 #if FCKIT_FINAL_DEBUGGING
-  this%return_value = .true.
+    FCKIT_WRITE_LOC
+    FCKIT_WRITE_DEBUG "  owners: ", type_owners(this)
 #endif
+end subroutine
+#endif
+
+subroutine return(this)
+  class(fckit_owned_object), intent(inout) :: this
+  this%return_value = .true.
 end subroutine
 
 

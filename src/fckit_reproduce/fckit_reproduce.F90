@@ -23,6 +23,8 @@ contains
   ! This is the case for cray compiler cce/15
   final :: Object__final_auto
 #endif
+  procedure, public :: assignment_operator_hook => this_assignment_operator_hook
+
 END TYPE
 
 interface Object
@@ -128,6 +130,12 @@ end function
 
 ! ----------------------------------------------------------------------------------------
 
+subroutine this_assignment_operator_hook(this, other)
+  class(Object) :: this
+  class(fckit_owned_object) :: other
+  write(0,*) " assignment_operator_hook "
+end subroutine
+  
 end module
 
 
