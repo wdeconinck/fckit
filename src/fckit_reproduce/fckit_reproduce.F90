@@ -12,15 +12,13 @@ public :: object_destroyed
 
 private
 
-! #undef FCKIT_FINAL_NOT_INHERITING
-! #define FCKIT_FINAL_NOT_INHERITING 0
-
 !------------------------------------------------------------------------------
 TYPE, extends(fckit_owned_object) :: Object
 contains
   procedure, public :: create_object
-#if FCKIT_FINAL_NOT_INHERITING
-  ! This is the case for cray compiler cce/15
+#ifdef ENABLE_OBJECT_FINAL_AUTO
+  ! Adding empty finalisation method to workaround Cray compiler bug
+  ! which would prevent the base auto final to be called
   final :: Object__final_auto
 #endif
   procedure, public :: assignment_operator_hook => Object__assignment_operator_hook
@@ -34,7 +32,7 @@ end interface
 !------------------------------------------------------------------------------
 TYPE, extends(Object) :: Derived
 contains
-#if FCKIT_FINAL_NOT_INHERITING
+#ifdef ENABLE_OBJECT_FINAL_AUTO
   ! This is the case for cray compiler cce/15
   final :: Derived__final_auto
 #endif
@@ -71,25 +69,20 @@ end function
 ! -----------------------------------------------------------------------------
 ! Destructor
 
-#if FCKIT_FINAL_NOT_INHERITING
 ! This is the case for cray compiler cce/15
 FCKIT_FINAL subroutine Object__final_auto(this)
   type(Object), intent(inout) :: this
 #if FCKIT_FINAL_DEBUGGING
   write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__final_auto"
 #endif
-! #if FCKIT_FINAL_NOT_PROPAGATING
-  call this%final()
-! #endif
 end subroutine
 
 FCKIT_FINAL subroutine Derived__final_auto(this)
   type(Derived), intent(inout) :: this
-#if FCKIT_FINAL_NOT_PROPAGATING
-  call this%final()
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Derived__final_auto"
 #endif
 end subroutine
-#endif
 
 
 ! -----------------------------------------------------------------------------
@@ -122,10 +115,25 @@ end function
 
 function Derived__ctor_id(identifier) result(this)
   use fckit_reproduce_c_binding
+  use, intrinsic :: iso_c_binding, only : c_ptr
   type(Derived) :: this
   integer, intent(in) :: identifier
-  call this%reset_c_ptr( new_Object(identifier) )
+  type(c_ptr) :: cptr
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Derived__ctor_id begin"
+#endif
+  cptr = new_Object(identifier)
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  this%reset_c_ptr(  )"
+#endif
+  call this%reset_c_ptr( cptr )
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  this%return()"
+#endif
   call this%return()
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Derived__ctor_id end"
+#endif
 end function
 
 ! ----------------------------------------------------------------------------------------

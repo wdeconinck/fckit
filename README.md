@@ -1,6 +1,59 @@
-# Problem
+# Cray compiler bug reproducers
 
-Observed with compiler cce/15.0.1
+This code is extracted from https://github.com/ecmwf/fckit to illustrate 2 Cray compiler bugs
+The code is altered compared to the original in order to create a minimal reproducer
+
+## Problem 1
+
+Consider following Fortran code:
+
+    type :: Object
+    contains
+      final :: destructor
+    endtype
+    
+    type, extends(Object) :: ObjectDerived
+    contains
+    endtype
+    
+    type, extends(Object) :: ObjectDerivedWithDummyFinal
+    contains
+      final :: destructor_ObjectDerivedWithDummyFinal
+    endtype
+    
+    ...
+
+    subroutine destructor(this)
+    type(Object) :: this
+    write(0,*) 'destructor called'
+    end subroutine 
+
+    subroutine destructor_ObjectDerivedWithDummyFinal(this)
+    type(ObjectDerivedWithDummyFinal) :: this
+    ! dummy, just so destructor will be called
+    end subroutine 
+
+Constructing an instance of `ObjectDerived` should call the 'destructor' subroutine from 'Object' but it doesn't.
+A workaround seems to be creating a dummy 'final' routine which is empty such as done in `ObjectDerivedWithDummyFinal`
+
+### Instructions to reproduce error:
+
+Environment on LUMI:
+
+    source env/lumi/cce-15.sh
+
+Compile:
+
+    rm -rf build
+    cmake -S . -B build
+    cmake --build build --target test_inherit_final
+
+    build/bin/test_inherit_final
+
+
+## Problem 2
+
+The second problem is observed with compiler cce/15.0.1
 
     lib-4220 : UNRECOVERABLE library error
     An internal library run time error has occurred.
@@ -9,7 +62,8 @@ Observed with compiler cce/15.0.1
 - libfckit_reproduce.so linked with CC
 - test_fckit_reproduce is linking to libfckit_reproduce.so
 
-# Instructions to reproduce error:
+
+### Instructions to reproduce error:
 
 Environment on LUMI:
 
@@ -29,21 +83,21 @@ Run:
 
     build/bin/test_fckit_reproduce
 
-# Known workarounds
+### Known workarounds
 
 Repeat above command by adding some cmake options 
 
-1. Compilation with static libraries
+1. Compilation with static libraries, NOT DESIRED
 
     export CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF"
 
-2. Compilation with Fortran linker
+2. Compilation of intermediate library `libfckit_reproduce.so` with Fortran linker, NOT DESIRED
 
     export CMAKE_ARGS="-DENABLE_CXX_LINKER=OFF"
 
     This makes the intermediate library fckit_reproduce.so linked with ftn instead of CC.
 
-3. Compilation with undesired code changes
+3. Compilation with code changes, NOT DESIRED
 
     export CMAKE_ARGS="-DENABLE_CRAY_WORKAROUND=ON"
 

@@ -303,53 +303,10 @@ function owners(this)
   endif
 end function
 
-#if 0
-subroutine return(this)
-  !! Transfer ownership to left hand side of "assignment(=)"
-  class(fckit_owned_object), intent(inout) :: this
-  this%return_value = .true.
-
-#if FCKIT_FINAL_FUNCTION_RESULT
-#warning FCKIT_FINAL_FUNCTION_RESULT
-  ! Cray example
-  ! final will be called, which will detach, so attach first
-#if FCKIT_ENABLE_CRAY_WORKAROUND
-  if( type_owners(this) == 0 ) then
-#else
-  if( this%owners() == 0 ) then
-#endif
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    write(0,'(A)') "return --> attach"
-#endif
-#if FCKIT_ENABLE_CRAY_WORKAROUND
-    call type_attach(this)
-#else
-    call this%attach()
-#endif
-  endif
-#else
-  ! final will not be called, so detach manually
-  if( this%owners() > 0 ) then
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    write(0,'(A)') "return --> detach"
-#endif
-    call this%detach()
-  endif
-#endif
-#if FCKIT_FINAL_DEBUGGING
-    FCKIT_WRITE_LOC
-    write(0,'(A)') "  owners: ", type_owners(this)
-#endif
-end subroutine
-#endif
-
 subroutine return(this)
   class(fckit_owned_object), intent(inout) :: this
   this%return_value = .true.
 end subroutine
-
 
 subroutine assignment_operator_hook(this, other)
   class(fckit_owned_object) :: this
