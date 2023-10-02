@@ -203,7 +203,8 @@ subroutine fckit_owned_object__final(this)
   if( this%owners() > 0 ) then
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
-    write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "   address: ", c_ptr_to_loc(this%cpp_object_ptr)
+    write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "   address: ", &
+      & c_ptr_to_loc(this%cpp_object_ptr)
 #endif
     call this%detach()
     if( this%owners() == 0 ) then
@@ -212,7 +213,8 @@ subroutine fckit_owned_object__final(this)
   endif
 #if FCKIT_FINAL_DEBUGGING
   FCKIT_WRITE_LOC
-  write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "    address: ", c_ptr_to_loc(this%cpp_object_ptr)
+  write(0,'(A,I0,A,I0)') "fckit_owned_object__final  , owners = ", type_owners(this), "    address: ", &
+    & c_ptr_to_loc(this%cpp_object_ptr)
 #endif
   call this%reset_c_ptr()
 end subroutine
