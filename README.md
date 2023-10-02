@@ -13,7 +13,7 @@ Observed with compiler cce/15.0.1
 
 Environment on LUMI:
 
-    source env-lumi.sh
+    source env/lumi/cce-15.sh
 
 Compile:
 
