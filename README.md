@@ -1,4 +1,4 @@
-# Cray compiler bug reproducers
+# Compiler tests 
 
 This code is extracted from https://github.com/ecmwf/fckit to illustrate 2 Cray compiler bugs
 The code is altered compared to the original in order to create a minimal reproducer
@@ -110,3 +110,15 @@ Repeat above command by adding some cmake options
 
    These code changes, which avoid type-bound procedures should not be necessary.
 
+# Compilers known to work:
+
+- gnu 8.5
+- gnu 13.1
+- intel 2021.4
+- intel 2023.2
+- nvidia 22.11
+
+# Compilers known to fail:
+
+- cce 15.0.1
+ 
