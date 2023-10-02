@@ -29,17 +29,6 @@ Run:
 
     build/bin/test_fckit_reproduce
 
-Output:
-
-    --------------------------------------------------------------
-    test_1 with manual finalisation
-    --------------------------------------------------------------
-    fckit_reproduce.cc @ 23 :  constructing Object 11
-
-    lib-4220 : UNRECOVERABLE library error
-    An internal library run time error has occurred.
-
-
 # Known workarounds
 
 Repeat above command by adding some cmake options 
@@ -54,4 +43,7 @@ Repeat above command by adding some cmake options
 
     This makes the intermediate library fckit_reproduce.so linked with ftn instead of CC.
 
-3. Compilation 
+3. Compilation with undesired code changes
+
+    export CMAKE_ARGS="-DENABLE_CRAY_WORKAROUND=ON"
+
