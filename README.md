@@ -8,34 +8,34 @@ The code is altered compared to the original in order to create a minimal reprod
 Consider following Fortran code:
 
 ```f90
-    type :: Object
-    contains
-      final :: destructor
-    endtype
-    
-    type, extends(Object) :: ObjectDerived
-    contains
-    endtype
-    
-    type, extends(Object) :: ObjectDerivedWithDummyFinal
-    contains
-      final :: destructor_ObjectDerivedWithDummyFinal
-    endtype
-    
-    ...
+type :: Object
+contains
+    final :: destructor
+endtype
 
-    subroutine destructor(this)
-      type(Object) :: this
-      write(0,*) 'destructor called'
-    end subroutine 
+type, extends(Object) :: ObjectDerived
+contains
+endtype
 
-    subroutine destructor_ObjectDerivedWithDummyFinal(this)
-      type(ObjectDerivedWithDummyFinal) :: this
-      ! dummy, just so destructor will be called
-    end subroutine 
+type, extends(Object) :: ObjectDerivedWithDummyFinal
+contains
+    final :: destructor_ObjectDerivedWithDummyFinal
+endtype
+
+...
+
+subroutine destructor(this)
+    type(Object) :: this
+    write(0,*) 'destructor called'
+end subroutine 
+
+subroutine destructor_ObjectDerivedWithDummyFinal(this)
+    type(ObjectDerivedWithDummyFinal) :: this
+    ! dummy, just so destructor will be called
+end subroutine
 ```
 
-Constructing an instance of `ObjectDerived` should call the 'destructor' subroutine from 'Object' but it doesn't.
+When instance of `ObjectDerived` leaves scope, the 'destructor' subroutine from 'Object' should get called but it doesn't.
 A workaround seems to be creating a dummy 'final' routine which is empty such as done in `ObjectDerivedWithDummyFinal`
 
 ### Instructions to reproduce error:
@@ -87,6 +87,11 @@ Run:
 
     build/bin/test_atlas_lite
 
+### Extra requirement
+
+- Above should work, both with `-DENABLE_FINAL=ON`` and `-DENABLE_FINAL=OFF`` !!!
+- When Problem 1 is fixed, then we should be able to use `-DENABLE_OBJECT_FINAL_AUTO=OFF`
+
 ### Known workarounds
 
 Three different methods have been succesful but unsatisfactory in working around the problem, and could help to
@@ -110,7 +115,9 @@ Repeat above command by adding some cmake options
 
    These code changes, which avoid type-bound procedures should not be necessary.
 
-# Compilers known to work:
+# Various compiler comparisons
+
+## Compilers known to work:
 
 - gnu 8.5
 - gnu 13.1
@@ -118,7 +125,8 @@ Repeat above command by adding some cmake options
 - intel 2023.2
 - nvidia 22.11
 
-# Compilers known to fail:
+## Compilers known to fail:
 
+- cce 14.0.2
 - cce 15.0.1
  
