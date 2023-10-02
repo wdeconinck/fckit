@@ -12,8 +12,8 @@ public :: object_destroyed
 
 private
 
-#undef FCKIT_FINAL_NOT_INHERITING
-#define FCKIT_FINAL_NOT_INHERITING 0
+! #undef FCKIT_FINAL_NOT_INHERITING
+! #define FCKIT_FINAL_NOT_INHERITING 0
 
 !------------------------------------------------------------------------------
 TYPE, extends(fckit_owned_object) :: Object
