@@ -10,19 +10,63 @@
 ! @author Willem Deconinck
 
 program main
+    use fckit_reproduce_module, only : object_destroyed
 
     logical :: success
-    success = .true.
+    logical :: autofinal
 
-    write(0,*) "--------------------------------------------------------------"
-    write(0,*) "test_1"
-    write(0,*) "--------------------------------------------------------------"
+    success = .true.
+    autofinal = .false.
+
+
+    write(0,'(A)') "--------------------------------------------------------------"
+    write(0,'(A)') "test_1 with manual finalisation"
+    write(0,'(A)') "--------------------------------------------------------------"
     call test_1
-    write(0,*) "--------------------------------------------------------------"
-    write(0,*) "test_2"
-    write(0,*) "--------------------------------------------------------------"
+    if (.not. object_destroyed(11)) then
+        success = .false.
+        write(0,'(A)') "Object 11 was not destroyed"
+    endif
+
+    write(0,'(A)') "--------------------------------------------------------------"
+    write(0,'(A)') "test_2 with manual finalisation"
+    write(0,'(A)') "--------------------------------------------------------------"
     call test_2
-    write(0,*) "--------------------------------------------------------------"
+    if (.not. object_destroyed(21)) then
+        success = .false.
+        write(0,'(A)') "Object 21 was not destroyed"
+    endif
+    if (.not. object_destroyed(22)) then
+        success = .false.
+        write(0,'(A)') "Object 22 was not destroyed"
+    endif
+
+#ifdef ENABLE_FINAL
+    autofinal = .true.
+    write(0,'(A)') "--------------------------------------------------------------"
+    write(0,'(A)') "test_1 with automatic finalisation"
+    write(0,'(A)') "--------------------------------------------------------------"
+    call test_1
+    if (.not. object_destroyed(11)) then
+        success = .false.
+        write(0,'(A)') "Object 11 was not destroyed"
+    endif
+
+    write(0,'(A)') "--------------------------------------------------------------"
+    write(0,'(A)') "test_2 with automatic finalisation"
+    write(0,'(A)') "--------------------------------------------------------------"
+    call test_2
+    if (.not. object_destroyed(21)) then
+        success = .false.
+        write(0,'(A)') "Object 21 was not destroyed"
+    endif
+    if (.not. object_destroyed(22)) then
+        success = .false.
+        write(0,'(A)') "Object 22 was not destroyed"
+    endif
+#endif
+
+    write(0,'(A)') "--------------------------------------------------------------"
 
     if (.not. success) then
       stop 1
@@ -35,14 +79,22 @@ subroutine test_1
 
     type(Object) :: obj
 
-    obj = Object(1)
+    obj = Object(11)
 
     if( obj%owners() /= 1 ) then
         write(0,*) "ERROR: obj%owners /= 1"
         success = .false.
     endif
 
-    call obj%final()
+    write(0,'(A)') ""
+    if (.not. autofinal) then
+        write(0,'(A)') "autofinal=.false. --> manual finalisation"
+        call obj%final()
+    else
+        write(0,'(A)') "autofinal=.false. --> automatic finalisation"
+    endif
+
+
 end subroutine
 
 subroutine test_2
@@ -50,27 +102,39 @@ subroutine test_2
 
     type(Object) :: obj1
     type(Object) :: obj2
-    
-    obj1 = Object(1)
+
+
+    obj1 = Object(21)
     
     if( obj1%owners() /= 1 ) then
-        write(0,*) "ERROR: obj1%owners /= 1    owners = ", obj1%owners()
+        write(0,'(A,I0)') "ERROR: obj1%owners /= 1    owners = ", obj1%owners()
         success = .false.
     endif
 
-    obj2  = obj1%create_object(2) ! this registers obj1 inside obj2 --> obj1%owners() += 1
+    obj2  = obj1%create_object(22) ! this registers obj1 inside obj2 --> obj1%owners() += 1
 
     if( obj1%owners() /= 2 ) then
-        write(0,*) "ERROR: obj1%owners /= 2    owners = ", obj1%owners()
+        write(0,'(A,I0)') "ERROR: obj1%owners /= 2    owners = ", obj1%owners()
         success = .false.
     endif
 
     if( obj2%owners() /= 1 ) then
-        write(0,*) "ERROR: obj2%owners /= 1    owners = ", obj2%owners()
+        write(0,'(A,I0)') "ERROR: obj2%owners /= 1    owners = ", obj2%owners()
         success = .false.
     endif
 
-    call obj2%final()
-    call obj1%final()
+    write(0,'(A)') ""
+    if (.not. autofinal) then
+        write(0,'(A)') "autofinal=.false. --> manual finalisation"
+        call obj2%final()
+        if( obj1%owners() /= 1 ) then
+            write(0,'(A,I0)') "ERROR: obj1%owners /= 1    owners = ", obj1%owners()
+            success = .false.
+        endif
+        call obj1%final()
+    else
+        write(0,'(A)') "autofinal=.false. --> automatic finalisation"
+    endif
+
 end subroutine
 end program

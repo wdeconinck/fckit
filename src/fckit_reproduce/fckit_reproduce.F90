@@ -8,8 +8,12 @@ implicit none
 
 public :: Object
 public :: Derived
+public :: object_destroyed
 
 private
+
+#undef FCKIT_FINAL_NOT_INHERITING
+#define FCKIT_FINAL_NOT_INHERITING 0
 
 !------------------------------------------------------------------------------
 TYPE, extends(fckit_owned_object) :: Object
@@ -42,6 +46,16 @@ end interface
 contains
 !========================================================
 
+function object_destroyed(id) result(destroyed)
+  use fckit_reproduce_c_binding
+  integer :: id
+  logical :: destroyed
+  destroyed = .false.
+  if (Object__destroyed(id) == 1) then
+    destroyed = .true.
+  endif
+end function
+
 function create_object(this,id) result(obj)
   use fckit_reproduce_c_binding
   class(Object), intent(in) :: this
@@ -59,8 +73,11 @@ end function
 ! This is the case for cray compiler cce/15
 FCKIT_FINAL subroutine Object__final_auto(this)
   type(Object), intent(inout) :: this
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__final_auto"
+#endif
 #if FCKIT_FINAL_NOT_PROPAGATING
-  call this%final()
+  ! call this%final()
 #endif
 end subroutine
 

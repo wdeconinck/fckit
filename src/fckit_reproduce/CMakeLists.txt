@@ -16,9 +16,13 @@ add_library( fckit_reproduce
   fckit_reproduce_c_binding.F90
   fckit_reproduce.cc
 )
-set_target_properties( fckit_reproduce PROPERTIES LINKER_LANGUAGE CXX )
-target_include_directories( fckit PUBLIC $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}>
-)
+if (ENABLE_CXX_LINKER)
+  set_target_properties( fckit_reproduce PROPERTIES LINKER_LANGUAGE CXX )
+else()
+  set_target_properties( fckit_reproduce PROPERTIES LINKER_LANGUAGE Fortran )
+endif()
+
+target_include_directories( fckit PUBLIC $<BUILD_INTERFACE:${CMAKE_Fortran_MODULE_DIRECTORY}> )
 target_link_libraries( fckit_reproduce PUBLIC fckit )
 
 # executable

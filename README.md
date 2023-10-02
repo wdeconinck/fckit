@@ -1,50 +1,57 @@
-FCKit
-=====
+# Problem
 
-[![fckit release version](https://img.shields.io/github/release/ecmwf/fckit.svg)](https://github.com/ecmwf/fckit/releases/latest)
-[![travis master](https://img.shields.io/travis/ecmwf/fckit/master.svg?label=master&logo=travis)](http://travis-ci.org/ecmwf/fckit "master")
-[![travis develop](https://img.shields.io/travis/ecmwf/fckit/develop.svg?label=develop&logo=travis)](http://travis-ci.org/ecmwf/fckit "develop")
-[![codecov](https://codecov.io/gh/ecmwf/fckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/fckit)
+Observed with compiler cce/15.0.1
 
-Fortran toolkit for interoperating Fortran with C/C++.
+    lib-4220 : UNRECOVERABLE library error
+    An internal library run time error has occurred.
 
-In addition useful algorithms from ecKit are wrapped with Fortran.
+- libfckit.so linked with CC
+- libfckit_reproduce.so linked with CC
+- test_fckit_reproduce is linking to libfckit_reproduce.so
 
-Project website and reference documentation on released versions:
-https://confluence.ecmwf.int/display/FCKIT
+# Instructions to reproduce error:
 
-## fctest
+Environment on LUMI:
 
-Unit Testing Framwork for Fortran, made easy.
+    source env-lumi.sh
 
-- C Preprocessor Macros are used to make writing tests extremely fast
-- Tests in one file are bundled in a Test Suite (Fortran Module)
-- Python script generates a main program for a Test Suite
-- Driven by CMake build system ( and ctest )
+Compile:
 
-### To use in your ecbuild project
+    rm -rf build
+    cmake -S . -B build ${CMAKE_ARGS}
+    cmake --build build
 
-Simply add following line to your project's CMakeLists.txt
+When CMAKE_ARGS is undefined, this is equivalent to
 
-```
-ecbuild_add_option( FEATURE FCTEST  DEFAULT ${ENABLE_TESTS}
-                    DESCRIPTION "Fortran Unit Testing Framework"
-                    REQUIRED_PACKAGES "NAME fckit" )
-```
+    CMAKE_ARGS="-DENABLE_FINAL=ON -DBUILD_SHARED_LIBS=ON -DENABLE_CXX_LINKER=ON -DENABLE_CRAY_WORKAROUND=OFF -DENABLE_DEBUG_OUTPUT=OFF"
 
-See src/examples folder how to add and create the unit-tests.
+Run:
 
-## fckit
+    build/bin/test_fckit_reproduce
 
-Various Fortran modules helpful to create mixed-language applications
+Output:
 
-- MPI
-- Logging
+    --------------------------------------------------------------
+    test_1 with manual finalisation
+    --------------------------------------------------------------
+    fckit_reproduce.cc @ 23 :  constructing Object 11
 
-### License
+    lib-4220 : UNRECOVERABLE library error
+    An internal library run time error has occurred.
 
-Please read LICENSE.
 
----------------------------------------------------------------------
+# Known workarounds
 
-ECMWF
+Repeat above command by adding some cmake options 
+
+1. Compilation with static libraries
+
+    export CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF"
+
+2. Compilation with Fortran linker
+
+    export CMAKE_ARGS="-DENABLE_CXX_LINKER=OFF"
+
+    This makes the intermediate library fckit_reproduce.so linked with ftn instead of CC.
+
+3. Compilation 

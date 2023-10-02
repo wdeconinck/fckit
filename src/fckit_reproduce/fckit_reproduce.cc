@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <map>
 
 #include "fckit_owned.h"
 
@@ -13,12 +14,17 @@ int fckit_fortranunit_stdout();
 int fckit_fortranunit_stderr();
 }
 
+std::map<int,int> object_destroyed;
+
 class Object : eckit::Owned {
 public:
     Object( int i ) : eckit::Owned(), i_( i ) {
         std::stringstream out;
         out << __FILENAME__ << " @ " << __LINE__ <<  " :  " << "constructing Object " << i_;
         fckit_write_to_fortran_unit( fckit_fortranunit_stderr(), out.str().c_str() );
+
+        // Log this for testing purpose
+        object_destroyed[i_] = 0;
     }
     ~Object() {
         std::stringstream out;
@@ -30,6 +36,7 @@ public:
                 delete other_;
             }
         }
+        object_destroyed[i_] = 1;
     }
     int id() const { return i_; }
 
@@ -72,5 +79,10 @@ void Object__set_other( Object* p, Object* o ) {
 Object* Object__other( Object* p) {
     return p->other();
 }
+
+int Object__destroyed(int i) {
+    return object_destroyed.at(i);
+}
+
 
 }

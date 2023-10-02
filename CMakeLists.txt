@@ -18,14 +18,19 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 option( ENABLE_FINAL "Enable final" ON )
+option( ENABLE_CXX_LINKER "Enable CXX linker" ON )
 option( ENABLE_DEBUG_OUTPUT "Enable debug output" OFF )
 option( ENABLE_CRAY_WORKAROUND "Enable workaround" OFF )
+option( BUILD_SHARED_LIBS "Build shared libs" ON )
 
 message("")
 message("Configuration:")
 message("   ENABLE_FINAL           : ${ENABLE_FINAL}")
 message("   ENABLE_DEBUG_OUTPUT    : ${ENABLE_DEBUG_OUTPUT}")
+message("   ENABLE_CXX_LINKER      : ${ENABLE_CXX_LINKER}")
 message("   ENABLE_CRAY_WORKAROUND : ${ENABLE_CRAY_WORKAROUND}" )
+message("   BUILD_SHARED_LIBS      : ${BUILD_SHARED_LIBS}" )
+
 if( ENABLE_DEBUG_OUTPUT )
   add_compile_definitions("ENABLE_DEBUG_OUTPUT")
 endif()
@@ -35,6 +40,7 @@ endif()
 
 
 if( ENABLE_FINAL )
+  add_compile_definitions("ENABLE_FINAL")
   set(fckit_HAVE_FINAL 1)
   set(fckit_HAVE_FINAL 1)
 else()

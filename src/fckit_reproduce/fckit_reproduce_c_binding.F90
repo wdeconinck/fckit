@@ -30,6 +30,12 @@ interface
       integer(c_int32_t) :: id
     end function
 
+    function Object__destroyed(i) bind(c,name="Object__destroyed") result(destroyed)
+      use, intrinsic :: iso_c_binding, only : c_int32_t
+      integer(c_int32_t), value :: i
+      integer(c_int32_t) :: destroyed
+    end function
+
 end interface
 
 contains
