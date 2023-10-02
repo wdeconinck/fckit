@@ -23,7 +23,7 @@ contains
   ! This is the case for cray compiler cce/15
   final :: Object__final_auto
 #endif
-  procedure, public :: assignment_operator_hook => this_assignment_operator_hook
+  procedure, public :: assignment_operator_hook => Object__assignment_operator_hook
 
 END TYPE
 
@@ -78,9 +78,9 @@ FCKIT_FINAL subroutine Object__final_auto(this)
 #if FCKIT_FINAL_DEBUGGING
   write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__final_auto"
 #endif
-#if FCKIT_FINAL_NOT_PROPAGATING
-  ! call this%final()
-#endif
+! #if FCKIT_FINAL_NOT_PROPAGATING
+  call this%final()
+! #endif
 end subroutine
 
 FCKIT_FINAL subroutine Derived__final_auto(this)
@@ -130,10 +130,12 @@ end function
 
 ! ----------------------------------------------------------------------------------------
 
-subroutine this_assignment_operator_hook(this, other)
+subroutine Object__assignment_operator_hook(this, other)
   class(Object) :: this
   class(fckit_owned_object) :: other
-  write(0,*) " assignment_operator_hook "
+#if FCKIT_FINAL_DEBUGGING
+  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__assignment_operator_hook"
+#endif
 end subroutine
   
 end module

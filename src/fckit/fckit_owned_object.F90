@@ -126,7 +126,10 @@ FCKIT_FINAL subroutine fckit_owned_object__final_auto(this)
   FCKIT_WRITE_DEBUG "BEGIN fckit_owned_object__final_auto    address:", c_ptr_to_loc(this%cpp_object_ptr)
 #endif
 
-if (.not. this%return_value) then
+if (this%return_value) then
+  FCKIT_WRITE_LOC
+  FCKIT_WRITE_DEBUG "Applying return-value-optimisation during assignment_operator, this%final not called"
+else
 
 #if FCKIT_ENABLE_CRAY_WORKAROUND
   if( .not. type_is_null(this) ) then
@@ -190,7 +193,9 @@ subroutine fckit_owned_object__final(this)
 #if FCKIT_FINAL_DEBUGGING
   if( this%return_value ) then
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", loc(this%cpp_object_ptr)
+    FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", loc(this%cpp_object_ptr), &
+    & " Not applying final() due to return-value-optimisation"
+    return
   endif
 #endif
 
@@ -223,12 +228,6 @@ subroutine assignment_operator(this,other)
 #endif
     write(0,*) "ERROR! other was not initialised"
   endif
-#if FCKIT_FINAL_DEBUGGING
-  if( other%return_value ) then
-    FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "other is a return value"
-  endif
-#endif
   if( this /= other ) then
 #if FCKIT_FINAL_DEBUGGING
 #if FCKIT_ENABLE_CRAY_WORKAROUND
@@ -245,6 +244,10 @@ subroutine assignment_operator(this,other)
 #endif
     call this%final()
     if( other%return_value ) then
+#if FCKIT_FINAL_DEBUGGING
+      FCKIT_WRITE_LOC
+      FCKIT_WRITE_DEBUG "    rhs is a return value, not attaching again"
+#endif
       this%cpp_object_ptr = other%cpp_object_ptr
       this%deleter = other%deleter
     else
