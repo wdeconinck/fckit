@@ -58,9 +58,9 @@ The second problem is observed with compiler cce/15.0.1
     lib-4220 : UNRECOVERABLE library error
     An internal library run time error has occurred.
 
-- libfckit.so linked with CC
-- libfckit_reproduce.so linked with CC
-- test_fckit_reproduce is linking to libfckit_reproduce.so
+- `libfckit_lite.so` linked with CC (c++)
+- `libatlas_lite.so` linked with CC (c++) and linking to `libfckit_lite.so`
+- `test_atlas_lite` is linking to `libatlas_lite.so`
 
 
 ### Instructions to reproduce error:
@@ -75,13 +75,13 @@ Compile:
     cmake -S . -B build ${CMAKE_ARGS}
     cmake --build build
 
-When CMAKE_ARGS is undefined, this is equivalent to
+When `CMAKE_ARGS` is undefined, this is equivalent to
 
     CMAKE_ARGS="-DENABLE_FINAL=ON -DBUILD_SHARED_LIBS=ON -DENABLE_CXX_LINKER=ON -DENABLE_CRAY_WORKAROUND=OFF -DENABLE_DEBUG_OUTPUT=OFF"
 
 Run:
 
-    build/bin/test_fckit_reproduce
+    build/bin/test_atlas_lite
 
 ### Known workarounds
 
@@ -89,15 +89,17 @@ Repeat above command by adding some cmake options
 
 1. Compilation with static libraries, NOT DESIRED
 
-    export CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF"
+        export CMAKE_ARGS="-DBUILD_SHARED_LIBS=OFF"
 
-2. Compilation of intermediate library `libfckit_reproduce.so` with Fortran linker, NOT DESIRED
+2. Compilation of library `libatlas_lite.so` with Fortran linker, NOT DESIRED!
 
-    export CMAKE_ARGS="-DENABLE_CXX_LINKER=OFF"
+        export CMAKE_ARGS="-DENABLE_CXX_LINKER=OFF"
 
-    This makes the intermediate library fckit_reproduce.so linked with ftn instead of CC.
+    This makes the intermediate library libatlas_lite.so linked with ftn instead of CC.
 
 3. Compilation with code changes, NOT DESIRED
 
-    export CMAKE_ARGS="-DENABLE_CRAY_WORKAROUND=ON"
+        export CMAKE_ARGS="-DENABLE_CRAY_WORKAROUND=ON"
+
+   These code changes, which avoid type-bound procedures should not be necessary.
 
