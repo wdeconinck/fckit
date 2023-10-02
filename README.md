@@ -24,13 +24,13 @@ Consider following Fortran code:
     ...
 
     subroutine destructor(this)
-    type(Object) :: this
-    write(0,*) 'destructor called'
+      type(Object) :: this
+      write(0,*) 'destructor called'
     end subroutine 
 
     subroutine destructor_ObjectDerivedWithDummyFinal(this)
-    type(ObjectDerivedWithDummyFinal) :: this
-    ! dummy, just so destructor will be called
+      type(ObjectDerivedWithDummyFinal) :: this
+      ! dummy, just so destructor will be called
     end subroutine 
 
 Constructing an instance of `ObjectDerived` should call the 'destructor' subroutine from 'Object' but it doesn't.
@@ -57,6 +57,8 @@ The second problem is observed with compiler cce/15.0.1
 
     lib-4220 : UNRECOVERABLE library error
     An internal library run time error has occurred.
+
+It involves compilation of 2 mixed C++/Fortran libraries:
 
 - `libfckit_lite.so` linked with CC (c++)
 - `libatlas_lite.so` linked with CC (c++) and linking to `libfckit_lite.so`
@@ -85,6 +87,9 @@ Run:
 
 ### Known workarounds
 
+Three different methods have been succesful but unsatisfactory in working around the problem, and could help to
+understand the underlying problem.
+
 Repeat above command by adding some cmake options 
 
 1. Compilation with static libraries, NOT DESIRED
@@ -95,7 +100,7 @@ Repeat above command by adding some cmake options
 
         export CMAKE_ARGS="-DENABLE_CXX_LINKER=OFF"
 
-    This makes the intermediate library libatlas_lite.so linked with ftn instead of CC.
+    This uses `ftn` instead of `CC` to link the intermediate library `libatlas_lite.so`
 
 3. Compilation with code changes, NOT DESIRED
 
