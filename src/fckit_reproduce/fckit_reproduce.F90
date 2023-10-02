@@ -131,10 +131,12 @@ end function
 ! ----------------------------------------------------------------------------------------
 
 subroutine Object__assignment_operator_hook(this, other)
+  use fckit_reproduce_c_binding
   class(Object) :: this
   class(fckit_owned_object) :: other
 #if FCKIT_FINAL_DEBUGGING
-  write(0,'(A,I0,A)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__assignment_operator_hook"
+  write(0,'(A,I0,A,I0)') "fckit_reproduce.F90 @ ", __LINE__, " :  Object__assignment_operator_hook for Object ", &
+      & Object__id(this%c_ptr())
 #endif
 end subroutine
   
