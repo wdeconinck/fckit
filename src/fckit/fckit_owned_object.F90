@@ -312,20 +312,12 @@ subroutine return(this)
   endif
 #else
   ! final will not be called, so detach manually
-#if FCKIT_ENABLE_CRAY_WORKAROUND
-  if( type_owners(this) > 0 ) then
-#else
   if( this%owners() > 0 ) then
-#endif
 #if FCKIT_FINAL_DEBUGGING
     FCKIT_WRITE_LOC
     FCKIT_WRITE_DEBUG "return --> detach"
 #endif
-#if FCKIT_ENABLE_CRAY_WORKAROUND
-    call type_detach(this)
-#else
     call this%detach()
-#endif
   endif
 #endif
 #if FCKIT_FINAL_DEBUGGING
