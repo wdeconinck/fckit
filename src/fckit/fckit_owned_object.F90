@@ -193,8 +193,8 @@ subroutine fckit_owned_object__final(this)
 #if FCKIT_FINAL_DEBUGGING
   if( this%return_value ) then
     FCKIT_WRITE_LOC
-    FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", loc(this%cpp_object_ptr), &
-    & " Not applying final() due to return-value-optimisation"
+    FCKIT_WRITE_DEBUG "fckit_owned_object__final on return value, owners = ", type_owners(this), "    address: ", &
+    & loc(this%cpp_object_ptr), " Not applying final() due to return-value-optimisation"
     return
   endif
 #endif
